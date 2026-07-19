@@ -1,248 +1,81 @@
-# 🌞 GHI Irradiance Tracker
+# GHI Irradiance Tracker
 
-A full-stack data visualization dashboard for monitoring **Global Horizontal Irradiance (GHI)** data. The application fetches solar irradiance data from a FastAPI backend, processes it in React, and displays interactive charts with filtering, statistics, and theme customization.
+A small full-stack app built for the PV Doctor Frontend Intern assignment. It merges daily solar irradiance (GHI) CSV files into one dataset, serves them through a local API, and displays them in a React dashboard with a line/area/bar/scatter chart, date-range toggle, and Max/Min/Avg stats.
 
-## 🚀 Features
+## Project Structure
 
-* 📈 Interactive GHI line chart visualization
-* 📊 Time range filtering:
 
-  * 1 Day
-  * 7 Days
-  * 1 Month
-  * All Data
-* 📌 Real-time calculation of:
-
-  * Maximum GHI value
-  * Minimum GHI value
-  * Average GHI value
-* 🌙 Dark / Light mode toggle
-* 🎨 Responsive modern UI
-* 📍 Interactive chart tooltips
-* ⚡ FastAPI backend API
-* 🔄 Dynamic data fetching from CSV dataset
-
----
-
-# 🛠️ Tech Stack
-
-## Frontend
-
-* React.js
-* Vite
-* Tailwind CSS
-* Chart.js
-* react-chartjs-2
-
-## Backend
-
-* FastAPI
-* Python
-* Pandas
-* Uvicorn
-
-## Data
-
-* CSV dataset containing GHI measurements
-
----
-
-# 📂 Project Structure
-
-```
-GHI-Irradiance-Tracker/
-
+project-folder/
+├── data-processing/       # Python script that merges the raw CSVs
+│   ├── merge_ghi.py
+│   └── merged_ghi.csv     # generated after running the script
 │
-├── backend/
-│   ├── main.py
-│   ├── combined_GHI.csv
-│   ├── requirements.txt
-│
-│
-├── frontend/
-│   ├── src/
-│   │   ├── api/
-│   │   │   └── ghiApi.js
-│   │   │
-│   │   ├── components/
-│   │   │   └── LineChart.jsx
-│   │   │
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   │
-│   ├── package.json
-│
-└── README.md
-```
+└── frontend/               # React app (Vite)
+    ├── src/
+    │   ├── api/ghiApi.js
+    │   └── components/LineChart.jsx
+    └── public/
+        └── data.json        # data the React app fetches
 
----
 
-# ⚙️ Installation & Setup
+## 1. Setting up the data (Python)
 
-## 1. Clone the repository
+**Install dependencies:**
 
-```bash
-git clone <repository-url>
+pip install pandas --break-system-packages
 
-cd GHI-Irradiance-Tracker
-```
 
----
+**Run the merge script:**
 
-# Backend Setup
+cd data-processing
+python merge_ghi.py
 
-Navigate to backend:
 
-```bash
+This reads every CSV inside the `GHI/` folder (organized by year-month), combines them into one file, and saves it as `merged_ghi.csv`.
+
+## 2. Running the backend (local API)
+
+If you're serving the data through a small local server instead of a static JSON file:
+
+
 cd backend
-```
+pip install fastapi uvicorn --break-system-packages
+uvicorn main:app --reload --port 8000
 
-Create virtual environment:
 
-```bash
-python -m venv venv
-```
+The API will be available at `http://localhost:8000`.
 
-Activate virtual environment:
+## 3. Running the frontend (React)
 
-### Windows
+**Install dependencies:**
 
-```bash
-venv\Scripts\activate
-```
-
-### Linux / Mac
-
-```bash
-source venv/bin/activate
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Start FastAPI server:
-
-```bash
-uvicorn main:app --reload
-```
-
-Backend will run at:
-
-```
-http://localhost:8000
-```
-
-API endpoint:
-
-```
-GET /data
-```
-
-Example response:
-
-```json
-[
-  {
-    "Date": "2022-03-24",
-    "GHI": 5.12505
-  }
-]
-```
-
----
-
-# Frontend Setup
-
-Open another terminal.
-
-Navigate to frontend:
-
-```bash
 cd frontend
-```
-
-Install dependencies:
-
-```bash
 npm install
-```
 
-Start React development server:
 
-```bash
+**Start the dev server:**
+
 npm run dev
-```
 
-Frontend will run at:
 
-```
-http://localhost:5173
-```
+The app will open at `http://localhost:5173` (or whichever port Vite prints in the terminal).
 
----
+## Features
 
-# 🔗 Application Flow
+- Line, Area, Bar, and Scatter chart views for the GHI data
+- Toggle between 1 Day / 7 Day / 30 Day / All time ranges
+- Live Max / Min / Avg stats for the selected range
+- Dark / Light theme toggle
+- Loading spinner and error handling with a Retry button
+- Fully responsive (checked on mobile view)
 
-```
-CSV Dataset
-     |
-     |
- Pandas
-     |
-     |
- FastAPI Endpoint
-     |
-     |
- React Fetch API
-     |
-     |
- Chart.js Visualization
-```
+## Tech Stack
 
----
+- **Frontend:** React (Vite), Tailwind CSS, Chart.js + react-chartjs-2
+- **Data processing:** Python, pandas
+- **Backend (if used):** FastAPI
 
-# 📊 Data Processing
+## Notes
 
-The backend loads the CSV file using Pandas:
-
-```python
-df = pd.read_csv("combined_GHI.csv")
-```
-
-The data is converted into JSON format and sent to the React frontend.
-
-The frontend extracts:
-
-* Date → X-axis labels
-* GHI → Chart values
-
-Example:
-
-```javascript
-const labels = data.map(item => item.Date);
-
-const values = data.map(item => item.GHI);
-```
-
----
-
-# 🎯 Future Improvements
-
-* Add multiple chart types (Line, Bar, Area)
-* Add date range picker
-* Add data export feature
-* Add user authentication
-* Deploy backend and frontend
-* Add database storage instead of CSV
-
----
-
-# 👨‍💻 Author
-
-Developed as a full-stack internship assessment project.
-
-Technologies used:
-React + FastAPI + Pandas + Chart.js
+- No UI component libraries were used (no Material UI, no Bootstrap) — all styling is custom Tailwind classes, per the assignment constraints.
+- Data is fetched from a local JSON/API, not hardcoded into components.
