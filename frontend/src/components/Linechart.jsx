@@ -12,7 +12,8 @@ import {
   BarElement,
   Legend,
 } from "chart.js";
-import { Chart } from "react-chartjs-2";
+// import { Chart } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
@@ -57,10 +58,15 @@ const RANGES = [
   { key: "all", label: "All" },
 ];
 
+// const CHART_STYLES = [
+//   { key: "line", label: "Line" },
+//   { key: "bar", label: "Bar" },
+//   { key: "scatter", label: "Scatter" },
+// ];
+
 const CHART_STYLES = [
   { key: "line", label: "Line" },
   { key: "bar", label: "Bar" },
-  { key: "scatter", label: "Scatter" },
 ];
 
 function LineChart() {
@@ -119,42 +125,79 @@ function LineChart() {
   const minGHI = values.length ? Math.min(...values) : 0;
   const avgGHI = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
 
-  const underlyingType = chartStyle === "bar" ? "bar" : "line";
+  // const underlyingType = chartStyle === "bar" ? "bar" : "line";
 
   const baseDataset = { label: "GHI", data: values };
 
+  // const styleDataset =
+  //   chartStyle === "bar"
+  //     ? { backgroundColor: ACCENT.amber, borderRadius: 4, maxBarThickness: 28 }
+  //     : chartStyle === "scatter"
+  //     ? {
+  //         showLine: false,
+  //         pointRadius: 5,
+  //         pointHoverRadius: 7,
+  //         pointBackgroundColor: ACCENT.amber,
+  //         pointBorderColor: theme.background,
+  //         pointBorderWidth: 1.5,
+  //       }
+  //     : {
+  //         showLine: true, 
+  //         borderColor: ACCENT.amber,
+  //         borderWidth: 2.5,
+  //         pointRadius: 0,
+  //         pointHoverRadius: 5,
+  //         pointHoverBackgroundColor: ACCENT.amber,
+  //         pointHoverBorderColor: theme.background,
+  //         pointHoverBorderWidth: 2,
+  //         tension: 0.35,
+  //         fill: true,
+  //         backgroundColor: (context) => {
+  //           const { ctx, chartArea } = context.chart;
+  //           if (!chartArea) return "rgba(245,166,35,0.2)";
+  //           const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+  //           gradient.addColorStop(0, darkMode ? "rgba(245,166,35,0.35)" : "rgba(245,166,35,0.18)");
+  //           gradient.addColorStop(1, "rgba(245,166,35,0)");
+  //           return gradient;
+  //         },
+  //       };
+
   const styleDataset =
-    chartStyle === "bar"
-      ? { backgroundColor: ACCENT.amber, borderRadius: 4, maxBarThickness: 28 }
-      : chartStyle === "scatter"
-      ? {
-          showLine: false,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointBackgroundColor: ACCENT.amber,
-          pointBorderColor: theme.background,
-          pointBorderWidth: 1.5,
-        }
-      : {
-          showLine: true, 
-          borderColor: ACCENT.amber,
-          borderWidth: 2.5,
-          pointRadius: 0,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: ACCENT.amber,
-          pointHoverBorderColor: theme.background,
-          pointHoverBorderWidth: 2,
-          tension: 0.35,
-          fill: true,
-          backgroundColor: (context) => {
-            const { ctx, chartArea } = context.chart;
-            if (!chartArea) return "rgba(245,166,35,0.2)";
-            const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-            gradient.addColorStop(0, darkMode ? "rgba(245,166,35,0.35)" : "rgba(245,166,35,0.18)");
-            gradient.addColorStop(1, "rgba(245,166,35,0)");
-            return gradient;
-          },
-        };
+  chartStyle === "bar"
+    ? {
+        backgroundColor: ACCENT.amber,
+        borderRadius: 4,
+        maxBarThickness: 28,
+      }
+    : {
+        borderColor: ACCENT.amber,
+        borderWidth: 2.5,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: ACCENT.amber,
+        pointHoverBorderColor: theme.background,
+        pointHoverBorderWidth: 2,
+        tension: 0.35,
+        fill: true,
+        backgroundColor: (context) => {
+          const { ctx, chartArea } = context.chart;
+          if (!chartArea) return "rgba(245,166,35,0.2)";
+          const gradient = ctx.createLinearGradient(
+            0,
+            chartArea.top,
+            0,
+            chartArea.bottom
+          );
+          gradient.addColorStop(
+            0,
+            darkMode
+              ? "rgba(245,166,35,0.35)"
+              : "rgba(245,166,35,0.18)"
+          );
+          gradient.addColorStop(1, "rgba(245,166,35,0)");
+          return gradient;
+        },
+      };
 
   const chartData = { labels, datasets: [{ ...baseDataset, ...styleDataset }] };
 
@@ -373,7 +416,25 @@ function LineChart() {
                 className="w-full h-full transition-opacity duration-200"
                 style={{ opacity: visible ? 1 : 0 }}
               >
-                <Chart ref={chartRef} type={underlyingType} data={chartData} options={options} />
+                
+                {/* <Chart ref={chartRef} type={underlyingType} data={chartData} options={options} /> */}
+
+                {chartStyle === "line" ? (
+  <Line
+    ref={chartRef}
+    data={chartData}
+    options={options}
+  />
+) : (
+  <Bar
+    ref={chartRef}
+    data={chartData}
+    options={options}
+  />
+)}
+
+
+
               </div>
             )}
           </div>
